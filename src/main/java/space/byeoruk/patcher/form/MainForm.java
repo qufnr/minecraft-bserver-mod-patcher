@@ -1,14 +1,15 @@
 package space.byeoruk.patcher.form;
 
-import space.byeoruk.patcher.utils.CommonUtils;
+import space.byeoruk.patcher.service.PatchService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.ConnectException;
 
 public class MainForm extends JFrame {
     private final JButton patchButton;
 
-    public MainForm() {
+    private MainForm() {
         super("BServer Mod Patcher");
         super.setSize(600, 200);
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,14 +31,30 @@ public class MainForm extends JFrame {
         super.setVisible(true);
     }
 
+    public static void run() {
+        new MainForm();
+    }
+
     private void onPatchStart() {
         this.patchButton.setEnabled(false);
 
         try {
-            CommonUtils.findMinecraft();
+            var success = PatchService.patch();
+            if(success) {
+                JOptionPane.showMessageDialog(null, "Successfully patched!");
+                return;
+            }
+            throw new RuntimeException("Failed to patch.");
         }
         catch(Exception e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            var message = e.getMessage();
+
+            if(e instanceof ConnectException)
+                message = "다운로드 서버에 연결할 수 없습니다.";
+
+            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+
+            e.printStackTrace();
         }
         finally {
             this.patchButton.setEnabled(true);
