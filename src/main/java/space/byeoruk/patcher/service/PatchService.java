@@ -60,36 +60,33 @@ public class PatchService {
 
     private static void unzipPatchFile(String zipFilePath, String destDir) throws IOException {
         var dir = new File(destDir);
-
-        if(!dir.exists())
-            throw new RuntimeException("Destination directory not found: %s".formatted(destDir));
+        ensureDirectoryExists(dir);
 
         try(var zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
             ZipEntry entry;
 
             while((entry = zipInputStream.getNextEntry()) != null) {
-                //  Resolve the new file path.
-                var file = new File(destDir, entry.getName());
+                System.out.printf("Extracting file... %s\n", entry.getName());
 
-                //  Prevent directory traversal attacks and invalid paths
-                var dirPath = dir.getCanonicalPath();
-                var filePath = file.getCanonicalPath();
+                //  Resolve the new file path
+                var newFile = new File(destDir, entry.getName());
 
-                System.out.printf("Extracting... %s\n", entry.getName());
-                System.out.printf("Resolved path: %s\n", filePath);
-
-                if(!filePath.startsWith(dirPath))
-                    throw new RuntimeException("Entry is outside of the target directory: %s".formatted(entry.getName()));
+                //  Validate the new file path
+                validateFilePath(newFile, dir);
 
                 if(entry.isDirectory())
-                    if(!file.isDirectory() && !file.mkdirs())
-                        throw new RuntimeException("Failed to create directory: %s".formatted(file));
+                    ensureDirectoryExists(newFile);
                 else {
-                    var parent = file.getParentFile();
+                    var parent = newFile.getParentFile();
+                    ensureDirectoryExists(parent);
+
+                    //  Delete existing file if any
+                    deleteFileIfExists(newFile);
+
                     if(!parent.exists() && !parent.mkdirs())
                         throw new RuntimeException("Failed to create directory: %s".formatted(parent));
 
-                    try(var fileOutputStream = new FileOutputStream(file)) {
+                    try(var fileOutputStream = new FileOutputStream(newFile)) {
                         var buffer = new byte[4096];
                         int len;
                         while((len = zipInputStream.read(buffer)) > 0) {
@@ -126,5 +123,24 @@ public class PatchService {
         var filename = downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1);
         System.out.printf("Zip filename %s\n", filename);
         return filename;
+    }
+
+    private static void ensureDirectoryExists(File dir) {
+        if(!dir.exists())
+            if(!dir.mkdirs() && !dir.isDirectory())
+                throw new RuntimeException("Failed to create directory: %s".formatted(dir));
+    }
+
+    private static void deleteFileIfExists(File file) {
+        if(file.exists() && !file.delete())
+            throw new RuntimeException("Failed to delete file: %s".formatted(file));
+    }
+
+    private static void validateFilePath(File file, File destDir) {
+        var destDirPath = destDir.getAbsolutePath();
+        var filePath = file.getAbsolutePath();
+
+        if(!filePath.startsWith(destDirPath + File.separator))
+            throw new RuntimeException("Entry is outside of the target directory: %s".formatted(filePath));
     }
 }
