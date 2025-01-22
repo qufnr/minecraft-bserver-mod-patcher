@@ -79,7 +79,7 @@ public class PatchForm {
                 System.out.println("최신 버전입니다.");
         }
         catch(Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             this.patchButton.setEnabled(true);
 
             e.printStackTrace();
