@@ -28,7 +28,7 @@ import java.util.List;
 
 public class PatchForm {
     private static final String APP_NAME = "벼룩서버 모드팩 설치 마법사";
-    private static final String VERSION = "1.0.0";
+    private static final String VERSION = "1.0.1";
 
     private static final String SERVER_ENDPOINT = "http://26.232.135.66:8008/minecraft-bserver/";
     private static final String FILE_URL = SERVER_ENDPOINT + "patch.zip";
