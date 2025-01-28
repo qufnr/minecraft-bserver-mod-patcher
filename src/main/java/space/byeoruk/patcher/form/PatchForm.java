@@ -38,8 +38,7 @@ public class PatchForm {
             SAVE_DIR + "\\mods",
             SAVE_DIR + "\\config",
             SAVE_DIR + "\\resourcepacks",
-            SAVE_DIR + "\\shaderpacks",
-            SAVE_DIR + "\\options.txt"
+            SAVE_DIR + "\\shaderpacks"
     );
 
     private static final String VERSION_FILENAME = "bserver-version.json";
