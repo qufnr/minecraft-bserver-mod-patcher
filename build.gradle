@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'space.byeoruk'
-version = '1.0.1'
+version = '1.0.2'
 
 repositories {
     mavenCentral()
@@ -23,8 +23,14 @@ tasks.named('shadowJar') {
 }
 
 dependencies {
+    //  압축
     implementation 'org.apache.commons:commons-compress:1.26.2'
+
+    //  JACKSON
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+
+    //  야믈
+    implementation 'org.yaml:snakeyaml:2.0'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
