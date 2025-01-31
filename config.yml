@@ -1,0 +1,17 @@
+# 서버 URL
+server: http://26.232.135.66:8008/minecraft-bserver
+endpoint:
+  # 다운로드 엔드포인트
+  download: /patch.zip
+  # 버전 체크 엔드포인트
+  versionCheck: /version.json
+# 클라이언트 버전 파일명
+versionFilename: bserver-version.json
+# 설치 및 업데이트 시 삭제할 파일/디렉토리
+deleteFiles:
+  - mods
+  - config
+  - resourcepacks
+  - shaderpacks
+# 디버그 여부
+debug: false
